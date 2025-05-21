@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-T">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Showdown</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Light gray background */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* Align to top to accommodate larger cards */
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px; /* Overall page padding */
+            box-sizing: border-box;
+        }
+        .food-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            width: 90vw; /* Adjusted for mobile: take up most of the viewport width */
+            max-width: 400px; /* Max width for a single card on mobile, can be adjusted */
+            display: flex; /* Using flex to structure card content */
+            flex-direction: column;
+        }
+        .food-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .food-card img {
+            width: 100%;
+            height: 55vh; /* Significantly increased image height using viewport height */
+            object-fit: cover; /* Ensures image covers the area, might crop */
+        }
+        .food-info {
+            padding: 16px;
+            text-align: center;
+            flex-grow: 1; /* Allows info to take remaining space if needed */
+        }
+        .food-name {
+            font-size: 1.1rem; /* Slightly adjusted for potentially less space */
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        .food-description {
+            font-size: 0.8rem; /* Slightly adjusted */
+            color: #4b5563;
+        }
+        #message-box {
+            margin-top: 20px; /* Adjusted margin */
+            padding: 10px 16px;
+            background-color: #d1fae5;
+            color: #065f46;
+            border-radius: 8px;
+            font-weight: 500;
+            text-align: center;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 90vw; /* Make message box responsive */
+            max-width: 824px; /* Max width consistent with two cards side-by-side */
+        }
+        #game-title {
+            font-size: 2rem; /* Adjusted title size */
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 24px; /* Adjusted margin */
+            text-align: center;
+        }
+        .comparison-container {
+            display: flex;
+            flex-direction: column; /* Stack on small screens */
+            gap: 20px; /* Space between cards */
+            align-items: center; /* Center cards when stacked */
+            width: 100%;
+        }
+        #next-round-button {
+            margin-top: 20px; /* Adjusted margin */
+        }
+
+        /* Responsive adjustments for larger screens */
+        @media (min-width: 768px) { /* md breakpoint */
+            .comparison-container {
+                flex-direction: row; /* Side-by-side on larger screens */
+                align-items: stretch; /* Make cards same height if content differs */
+                justify-content: center; /* Center the cards in the row */
+                gap: 24px; /* Gap between cards on desktop */
+            }
+            .food-card {
+                width: 40vw; /* Each card takes up 40% of viewport width */
+                max-width: 400px; /* Max width per card on desktop */
+                /* Height will be determined by image + text content */
+            }
+             .food-card img {
+                height: 50vh; /* Slightly adjust for desktop if needed, or keep same */
+            }
+            #game-title {
+                font-size: 2.5rem;
+            }
+        }
+        @media (min-width: 1024px) { /* lg breakpoint for wider screens */
+             .food-card img {
+                height: 55vh; /* Can make it a bit taller on very wide screens */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1 id="game-title">Which Food Wins?</h1>
+
+    <div class="comparison-container">
+        <div id="food1" class="food-card">
+            <img src="https://placehold.co/600x400/FBBF24/374151?text=Loading..." alt="Food 1"
+                 onerror="this.onerror=null;this.src='https://placehold.co/600x400/ef4444/ffffff?text=Image+Error';">
+            <div class="food-info">
+                <h2 class="food-name">Food Item 1</h2>
+                <p class="food-description">Description for food item 1.</p>
+            </div>
+        </div>
+
+        <div id="food2" class="food-card">
+            <img src="https://placehold.co/600x400/EC4899/374151?text=Loading..." alt="Food 2"
+                 onerror="this.onerror=null;this.src='https://placehold.co/600x400/ef4444/ffffff?text=Image+Error';">
+            <div class="food-info">
+                <h2 class="food-name">Food Item 2</h2>
+                <p class="food-description">Description for food item 2.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="message-box" class="mt-6 p-4 rounded-lg">
+        Select your preferred food item!
+    </div>
+
+    <button id="next-round-button"
+        class="mt-6 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition ease-in-out duration-150 hidden"
+        onclick="loadNewRound()">
+        Next Round
+    </button>
+
+    <script>
+        // Simple array of food data objects
+        const foodDatabase = [
+            {
+                id: 'burger_01',
+                name: 'Classic Cheeseburger',
+                description: 'Juicy beef patty, cheddar cheese, lettuce, and tomato.',
+                imageUrl: 'https://placehold.co/600x800/FBBF24/374151?text=Cheeseburger' // Taller placeholder
+            },
+            {
+                id: 'pizza_01',
+                name: 'Pepperoni Pizza',
+                description: 'Spicy pepperoni on a bed of mozzarella and tomato sauce.',
+                imageUrl: 'https://placehold.co/600x800/EC4899/374151?text=Pepperoni+Pizza'
+            },
+            {
+                id: 'taco_01',
+                name: 'Spicy Chicken Taco',
+                description: 'Grilled chicken with salsa and a hint of lime.',
+                imageUrl: 'https://placehold.co/600x800/84CC16/374151?text=Chicken+Taco'
+            },
+            {
+                id: 'sushi_01',
+                name: 'Salmon Sushi Roll',
+                description: 'Fresh salmon and avocado wrapped in seaweed and rice.',
+                imageUrl: 'https://placehold.co/600x800/3B82F6/FFFFFF?text=Sushi+Roll'
+            },
+            {
+                id: 'hotdog_01',
+                name: 'Stadium Hot Dog',
+                description: 'A classic dog with ketchup and mustard.',
+                imageUrl: 'https://placehold.co/600x800/F97316/FFFFFF?text=Hot+Dog'
+            },
+            {
+                id: 'fries_01',
+                name: 'Crispy French Fries',
+                description: 'Golden and perfectly salted.',
+                imageUrl: 'https://placehold.co/600x800/FACC15/374151?text=French+Fries'
+            },
+            {
+                id: 'icecream_01',
+                name: 'Chocolate Ice Cream',
+                description: 'Rich and creamy chocolate goodness.',
+                imageUrl: 'https://placehold.co/600x800/A855F7/FFFFFF?text=Ice+Cream'
+            },
+            {
+                id: 'salad_01',
+                name: 'Fresh Garden Salad',
+                description: 'A mix of fresh greens and vegetables.',
+                imageUrl: 'https://placehold.co/600x800/22C55E/FFFFFF?text=Salad'
+            }
+        ];
+
+        let currentFood1 = null;
+        let currentFood2 = null;
+        let canSelect = true;
+
+        const foodCard1El = document.getElementById('food1'); // Renamed to avoid conflict
+        const foodCard2El = document.getElementById('food2'); // Renamed to avoid conflict
+        const messageBox = document.getElementById('message-box');
+        const nextRoundButton = document.getElementById('next-round-button');
+
+        function updateFoodCard(cardElement, foodData) {
+            cardElement.querySelector('img').src = foodData.imageUrl;
+            cardElement.querySelector('img').alt = foodData.name;
+            cardElement.querySelector('img').onerror = function() {
+                this.onerror=null;
+                this.src='https://placehold.co/600x400/ef4444/ffffff?text=' + encodeURIComponent(foodData.name.replace(/\s+/g, '+')) + '+Error';
+            };
+            cardElement.querySelector('.food-name').textContent = foodData.name;
+            cardElement.querySelector('.food-description').textContent = foodData.description;
+            cardElement.onclick = () => selectFood(foodData.name, cardElement.id);
+        }
+
+        function loadNewRound() {
+            if (foodDatabase.length < 2) {
+                messageBox.textContent = "Not enough food items for a new round!";
+                messageBox.className = 'mt-6 p-4 rounded-lg bg-red-200 text-red-700';
+                nextRoundButton.classList.add('hidden');
+                canSelect = false;
+                return;
+            }
+
+            let randomIndex1 = Math.floor(Math.random() * foodDatabase.length);
+            let randomIndex2;
+            do {
+                randomIndex2 = Math.floor(Math.random() * foodDatabase.length);
+            } while (randomIndex1 === randomIndex2); 
+
+            currentFood1 = foodDatabase[randomIndex1];
+            currentFood2 = foodDatabase[randomIndex2];
+
+            updateFoodCard(foodCard1El, currentFood1);
+            updateFoodCard(foodCard2El, currentFood2);
+
+            messageBox.textContent = 'Select your preferred food item!';
+            messageBox.className = 'mt-6 p-4 rounded-lg bg-blue-100 text-blue-700';
+            
+            foodCard1El.classList.remove('border-4', 'border-green-500', 'opacity-50');
+            foodCard2El.classList.remove('border-4', 'border-green-500', 'opacity-50');
+            foodCard1El.classList.remove('opacity-50');
+            foodCard2El.classList.remove('opacity-50');
+            
+            nextRoundButton.classList.add('hidden');
+            canSelect = true;
+        }
+
+        function selectFood(foodName, selectedCardId) {
+            if (!canSelect) return; 
+
+            messageBox.textContent = `You selected: ${foodName}!`;
+            messageBox.className = 'mt-6 p-4 rounded-lg bg-green-100 text-green-700';
+
+            if (selectedCardId === 'food1') {
+                foodCard1El.classList.add('border-4', 'border-green-500');
+                foodCard1El.classList.remove('opacity-50');
+                foodCard2El.classList.add('opacity-50');
+                foodCard2El.classList.remove('border-4', 'border-green-500');
+            } else {
+                foodCard2El.classList.add('border-4', 'border-green-500');
+                foodCard2El.classList.remove('opacity-50');
+                foodCard1El.classList.add('opacity-50');
+                foodCard1El.classList.remove('border-4', 'border-green-500');
+            }
+            
+            nextRoundButton.classList.remove('hidden');
+            canSelect = false;
+        }
+
+        window.onload = function() {
+            // Initial population of card content in HTML is minimal,
+            // so loadNewRound will correctly set them up.
+            loadNewRound();
+        };
+    </script>
+
+</body>
+</html>
