@@ -37,33 +37,34 @@
         }
         .food-card img {
             width: 100%;
-            height: 55vh; /* Significantly increased image height using viewport height */
+            height: 82.5vh; /* CHANGED: 55vh * 1.5 = 82.5vh */
             object-fit: cover; /* Ensures image covers the area, might crop */
         }
         .food-info {
-            padding: 16px;
+            padding: 12px; /* Slightly reduced padding to save space */
             text-align: center;
             flex-grow: 1; /* Allows info to take remaining space if needed */
         }
         .food-name {
-            font-size: 1.1rem; /* Slightly adjusted for potentially less space */
+            font-size: 1rem; /* Slightly adjusted for potentially less space */
             font-weight: 600;
             color: #1f2937;
-            margin-bottom: 8px;
+            margin-bottom: 4px; /* Reduced margin */
         }
         .food-description {
-            font-size: 0.8rem; /* Slightly adjusted */
+            font-size: 0.75rem; /* Slightly adjusted */
             color: #4b5563;
+            line-height: 1.2; /* Adjust line height for condensed text */
         }
         #message-box {
-            margin-top: 20px; /* Adjusted margin */
-            padding: 10px 16px;
+            margin-top: 16px; /* Adjusted margin */
+            padding: 8px 12px; /* Adjusted padding */
             background-color: #d1fae5;
             color: #065f46;
             border-radius: 8px;
             font-weight: 500;
             text-align: center;
-            min-height: 40px;
+            min-height: 36px; /* Adjusted min-height */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -72,21 +73,23 @@
             max-width: 824px; /* Max width consistent with two cards side-by-side */
         }
         #game-title {
-            font-size: 2rem; /* Adjusted title size */
+            font-size: 1.75rem; /* Adjusted title size */
             font-weight: 700;
             color: #111827;
-            margin-bottom: 24px; /* Adjusted margin */
+            margin-bottom: 16px; /* Adjusted margin */
             text-align: center;
         }
         .comparison-container {
             display: flex;
             flex-direction: column; /* Stack on small screens */
-            gap: 20px; /* Space between cards */
+            gap: 16px; /* Space between cards */
             align-items: center; /* Center cards when stacked */
             width: 100%;
         }
         #next-round-button {
-            margin-top: 20px; /* Adjusted margin */
+            margin-top: 16px; /* Adjusted margin */
+            padding: 10px 20px; /* Adjusted padding */
+            font-size: 0.9rem; /* Adjusted font size */
         }
 
         /* Responsive adjustments for larger screens */
@@ -95,23 +98,31 @@
                 flex-direction: row; /* Side-by-side on larger screens */
                 align-items: stretch; /* Make cards same height if content differs */
                 justify-content: center; /* Center the cards in the row */
-                gap: 24px; /* Gap between cards on desktop */
+                gap: 20px; /* Gap between cards on desktop */
             }
             .food-card {
                 width: 40vw; /* Each card takes up 40% of viewport width */
                 max-width: 400px; /* Max width per card on desktop */
-                /* Height will be determined by image + text content */
             }
              .food-card img {
-                height: 50vh; /* Slightly adjust for desktop if needed, or keep same */
+                height: 75vh; /* CHANGED: 50vh * 1.5 = 75vh */
             }
             #game-title {
-                font-size: 2.5rem;
+                font-size: 2.25rem;
             }
+            .food-info {
+                padding: 16px; /* Restore some padding for larger screens */
+            }
+             .food-name {
+                font-size: 1.1rem;
+             }
+             .food-description {
+                font-size: 0.8rem;
+             }
         }
         @media (min-width: 1024px) { /* lg breakpoint for wider screens */
              .food-card img {
-                height: 55vh; /* Can make it a bit taller on very wide screens */
+                height: 82.5vh; /* CHANGED: 55vh * 1.5 = 82.5vh */
             }
         }
     </style>
@@ -157,7 +168,7 @@
                 id: 'burger_01',
                 name: 'Classic Cheeseburger',
                 description: 'Juicy beef patty, cheddar cheese, lettuce, and tomato.',
-                imageUrl: 'https://placehold.co/600x800/FBBF24/374151?text=Cheeseburger' // Taller placeholder
+                imageUrl: 'https://placehold.co/600x800/FBBF24/374151?text=Cheeseburger'
             },
             {
                 id: 'pizza_01',
@@ -207,8 +218,8 @@
         let currentFood2 = null;
         let canSelect = true;
 
-        const foodCard1El = document.getElementById('food1'); // Renamed to avoid conflict
-        const foodCard2El = document.getElementById('food2'); // Renamed to avoid conflict
+        const foodCard1El = document.getElementById('food1');
+        const foodCard2El = document.getElementById('food2');
         const messageBox = document.getElementById('message-box');
         const nextRoundButton = document.getElementById('next-round-button');
 
@@ -227,7 +238,7 @@
         function loadNewRound() {
             if (foodDatabase.length < 2) {
                 messageBox.textContent = "Not enough food items for a new round!";
-                messageBox.className = 'mt-6 p-4 rounded-lg bg-red-200 text-red-700';
+                messageBox.className = 'mt-6 p-4 rounded-lg bg-red-200 text-red-700'; // Adjusted class for consistency
                 nextRoundButton.classList.add('hidden');
                 canSelect = false;
                 return;
@@ -245,8 +256,12 @@
             updateFoodCard(foodCard1El, currentFood1);
             updateFoodCard(foodCard2El, currentFood2);
 
+            // Use consistent class naming for message box updates
             messageBox.textContent = 'Select your preferred food item!';
-            messageBox.className = 'mt-6 p-4 rounded-lg bg-blue-100 text-blue-700';
+            messageBox.className = 'p-4 rounded-lg bg-blue-100 text-blue-700'; // Base classes for message box
+            // Add margin separately if needed, or include in base if always present
+            messageBox.classList.add('mt-6'); // Or adjust as needed, was 'mt-6 p-4 rounded-lg'
+
             
             foodCard1El.classList.remove('border-4', 'border-green-500', 'opacity-50');
             foodCard2El.classList.remove('border-4', 'border-green-500', 'opacity-50');
@@ -261,7 +276,9 @@
             if (!canSelect) return; 
 
             messageBox.textContent = `You selected: ${foodName}!`;
-            messageBox.className = 'mt-6 p-4 rounded-lg bg-green-100 text-green-700';
+            messageBox.className = 'p-4 rounded-lg bg-green-100 text-green-700'; // Base classes
+            messageBox.classList.add('mt-6');
+
 
             if (selectedCardId === 'food1') {
                 foodCard1El.classList.add('border-4', 'border-green-500');
@@ -280,8 +297,6 @@
         }
 
         window.onload = function() {
-            // Initial population of card content in HTML is minimal,
-            // so loadNewRound will correctly set them up.
             loadNewRound();
         };
     </script>
