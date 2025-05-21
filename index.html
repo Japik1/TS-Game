@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-T">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Food Showdown</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Animal Showdown</title> <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -19,16 +18,16 @@
             padding: 20px; /* Overall page padding */
             box-sizing: border-box;
         }
-        .food-card {
+        .food-card { /* Represents an animal card */
             background-color: white;
             border-radius: 12px;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             overflow: hidden;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
-            width: 90vw; /* Adjusted for mobile: take up most of the viewport width */
-            max-width: 400px; /* Max width for a single card on mobile, can be adjusted */
-            display: flex; /* Using flex to structure card content */
+            width: 90vw; 
+            max-width: 1200px; /* CHANGED: Was 400px */
+            display: flex; 
             flex-direction: column;
         }
         .food-card:hover {
@@ -36,82 +35,82 @@
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
         .food-card img {
-            width: 100%;
-            height: 82.5vh; /* CHANGED: 55vh * 1.5 = 82.5vh */
-            object-fit: cover; /* Ensures image covers the area, might crop */
+            width: 100%; /* Image takes full width of the card */
+            height: 82.5vh; 
+            object-fit: cover; 
         }
-        .food-info {
-            padding: 12px; /* Slightly reduced padding to save space */
+        .food-info { /* Represents animal-info */
+            padding: 12px; 
             text-align: center;
-            flex-grow: 1; /* Allows info to take remaining space if needed */
+            flex-grow: 1; 
         }
-        .food-name {
-            font-size: 1rem; /* Slightly adjusted for potentially less space */
+        .food-name { /* Represents animal-name */
+            font-size: 1rem; 
             font-weight: 600;
             color: #1f2937;
-            margin-bottom: 4px; /* Reduced margin */
+            margin-bottom: 4px; 
         }
-        .food-description {
-            font-size: 0.75rem; /* Slightly adjusted */
+        .food-description { /* Represents animal-description */
+            font-size: 0.75rem; 
             color: #4b5563;
-            line-height: 1.2; /* Adjust line height for condensed text */
+            line-height: 1.2; 
         }
         #message-box {
-            margin-top: 16px; /* Adjusted margin */
-            padding: 8px 12px; /* Adjusted padding */
+            margin-top: 16px; 
+            padding: 8px 12px; 
             background-color: #d1fae5;
             color: #065f46;
             border-radius: 8px;
             font-weight: 500;
             text-align: center;
-            min-height: 36px; /* Adjusted min-height */
+            min-height: 36px; 
             display: flex;
             align-items: center;
             justify-content: center;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            width: 90vw; /* Make message box responsive */
-            max-width: 824px; /* Max width consistent with two cards side-by-side */
+            width: 90vw; 
+            max-width: 2424px; /* CHANGED: Was 824px, to accommodate wider cards (1200*2 + 24 gap) */
         }
         #game-title {
-            font-size: 1.75rem; /* Adjusted title size */
+            font-size: 1.75rem; 
             font-weight: 700;
             color: #111827;
-            margin-bottom: 16px; /* Adjusted margin */
+            margin-bottom: 16px; 
             text-align: center;
         }
         .comparison-container {
             display: flex;
-            flex-direction: column; /* Stack on small screens */
-            gap: 16px; /* Space between cards */
-            align-items: center; /* Center cards when stacked */
+            flex-direction: column; 
+            gap: 16px; 
+            align-items: center; 
             width: 100%;
         }
         #next-round-button {
-            margin-top: 16px; /* Adjusted margin */
-            padding: 10px 20px; /* Adjusted padding */
-            font-size: 0.9rem; /* Adjusted font size */
+            margin-top: 16px; 
+            padding: 10px 20px; 
+            font-size: 0.9rem; 
         }
 
         /* Responsive adjustments for larger screens */
         @media (min-width: 768px) { /* md breakpoint */
             .comparison-container {
-                flex-direction: row; /* Side-by-side on larger screens */
-                align-items: stretch; /* Make cards same height if content differs */
-                justify-content: center; /* Center the cards in the row */
-                gap: 20px; /* Gap between cards on desktop */
+                flex-direction: row; 
+                align-items: stretch; /* Changed from flex-start to stretch for consistent card heights */
+                justify-content: center; 
+                gap: 20px; 
             }
             .food-card {
-                width: 40vw; /* Each card takes up 40% of viewport width */
-                max-width: 400px; /* Max width per card on desktop */
+                width: 40vw; /* Each card aims for 40% of viewport width */
+                max-width: 1200px; /* CHANGED: Was 400px. This allows cards to be much wider */
             }
              .food-card img {
-                height: 75vh; /* CHANGED: 50vh * 1.5 = 75vh */
+                height: 75vh; 
             }
             #game-title {
                 font-size: 2.25rem;
             }
             .food-info {
-                padding: 16px; /* Restore some padding for larger screens */
+                padding: 16px; 
             }
              .food-name {
                 font-size: 1.1rem;
@@ -122,37 +121,33 @@
         }
         @media (min-width: 1024px) { /* lg breakpoint for wider screens */
              .food-card img {
-                height: 82.5vh; /* CHANGED: 55vh * 1.5 = 82.5vh */
+                height: 82.5vh; 
             }
         }
     </style>
 </head>
 <body>
 
-    <h1 id="game-title">Which Food Wins?</h1>
-
-    <div class="comparison-container">
-        <div id="food1" class="food-card">
-            <img src="https://placehold.co/600x400/FBBF24/374151?text=Loading..." alt="Food 1"
+    <h1 id="game-title">Which Animal Wins?</h1> <div class="comparison-container">
+        <div id="food1" class="food-card"> <img src="https://placehold.co/600x400/FBBF24/374151?text=Loading..." alt="Animal 1"
                  onerror="this.onerror=null;this.src='https://placehold.co/600x400/ef4444/ffffff?text=Image+Error';">
             <div class="food-info">
-                <h2 class="food-name">Food Item 1</h2>
-                <p class="food-description">Description for food item 1.</p>
+                <h2 class="food-name">Animal 1</h2>
+                <p class="food-description">Description for animal 1.</p>
             </div>
         </div>
 
-        <div id="food2" class="food-card">
-            <img src="https://placehold.co/600x400/EC4899/374151?text=Loading..." alt="Food 2"
+        <div id="food2" class="food-card"> <img src="https://placehold.co/600x400/EC4899/374151?text=Loading..." alt="Animal 2"
                  onerror="this.onerror=null;this.src='https://placehold.co/600x400/ef4444/ffffff?text=Image+Error';">
             <div class="food-info">
-                <h2 class="food-name">Food Item 2</h2>
-                <p class="food-description">Description for food item 2.</p>
+                <h2 class="food-name">Animal 2</h2>
+                <p class="food-description">Description for animal 2.</p>
             </div>
         </div>
     </div>
 
     <div id="message-box" class="mt-6 p-4 rounded-lg">
-        Select your preferred food item!
+        Select your preferred animal!
     </div>
 
     <button id="next-round-button"
@@ -162,108 +157,108 @@
     </button>
 
     <script>
-        // Simple array of food data objects
-        const foodDatabase = [
- {
-        id: 'frog1',
-        name: 'White lipped tree frog',
-        description: 'Large green frog with distinctive white stripe on lower lip',
-        imageUrl: 'https://i.imgur.com/dCIei0k.jpeg'
-    },
-    {
-        id: 'snake1',
-        name: 'Brown Tree Snake',
-        description: 'arboreal, mildly venomous snake, brown with faint bands',
-        imageUrl: 'https://i.imgur.com/WfsYrmT.jpeg'
-    },
-    {
-        id: 'lizard1',
-        name: 'Water Dragon',
-        description: 'Semi-aquatic lizard with crest, often found near water bodies',
-        imageUrl: 'https://i.imgur.com/IIAhO4W.jpeg'
-    },
-    {
-        id: 'frog2',
-        name: 'Frog',
-        description: 'stony frog',
-        imageUrl: 'https://i.imgur.com/xEW5LJh.jpeg'
-    },
-    {
-        id: 'frog3',
-        name: 'Froggo',
-        description: 'stoney frog',
-        imageUrl: 'https://i.imgur.com/EELh1zu.jpeg'
-    },
-    {
-        id: 'frog4',
-        name: 'Golden Bell Frog',
-        description: 'Green and golden frog, often basks, distinct blue thighs',
-        imageUrl: 'https://i.imgur.com/Bynr1Ie.jpeg'
-    },
-    {
-        id: 'frog5',
-        name: 'Golden Bell Frog',
-        description: 'Green and golden frog, often basks, distinct blue thighs',
-        imageUrl: 'https://i.imgur.com/khXKCc6.jpeg'
-    },
-    {
-        id: 'lizard2',
-        name: 'Boyds Forest Dragon',
-        description: 'arboreal lizard',
-        imageUrl: 'https://i.imgur.com/NTdjX90.jpeg'
-    },
-    {
-        id: 'frog6',
-        name: 'Dainty Tree Frog',
-        description: 'Small, slender green frog with yellow sides and orange eyes',
-        imageUrl: 'https://i.imgur.com/yuN6cke.jpeg'
-    },
-    {
-        id: 'frog7',
-        name: 'Dainty Tree Frog',
-        description: 'Small, slender green frog with yellow sides and orange eyes',
-        imageUrl: 'https://i.imgur.com/h48a8gF.jpeg'
-    },
-    {
-        id: 'snake2',
-        name: 'Jungle Python',
-        description: 'Vividly coloured non-venomous snake, often yellow and black',
-        imageUrl: 'https://i.imgur.com/CC5IYZ5.jpeg'
-    },
-    {
-        id: 'lizard3',
-        name: 'Leaf tailed Gecko',
-        description: 'Masters of camouflage, flat body and broad, leaf-like tail',
-        imageUrl: 'https://i.imgur.com/WLLdMNu.jpeg'
-    },
-    {
-        id: 'snake3',
-        name: 'Green Viper',
-        description: 'Venomous pit viper, typically green, arboreal, heat-sensing pits',
-        imageUrl: 'https://i.imgur.com/lIiOrwD.jpeg'
-    },
-    {
-        id: 'snake4',
-        name: 'Wolf Snake(?)',
-        description: 'Slender, non-venomous, nocturnal, often mimics venomous kraits',
-        imageUrl: 'https://i.imgur.com/T1sGFBr.jpeg'
-    },
-    {
-        id: 'turtle1',
-        name: 'Broadshelled Turtle',
-        description: 'Large freshwater turtle with an exceptionally long, broad neck',
-        imageUrl: 'https://i.imgur.com/zSbB4Zq.jpeg'
-    },
-    {
-        id: 'turtle2',
-        name: 'Broadshelled Turtle',
-        description: 'Large freshwater turtle with an exceptionally long, broad neck',
-        imageUrl: 'https://i.imgur.com/zKGIS2h.jpeg'
-    }
+        // Updated array of animal data objects
+        const foodDatabase = [ 
+            {
+                id: 'frog1',
+                name: 'White lipped tree frog',
+                description: 'Large green frog with distinctive white stripe on lower lip',
+                imageUrl: 'https://i.imgur.com/dCIei0k.jpeg'
+            },
+            {
+                id: 'snake1',
+                name: 'Brown Tree Snake',
+                description: 'arboreal, mildly venomous snake, brown with faint bands',
+                imageUrl: 'https://i.imgur.com/WfsYrmT.jpeg'
+            },
+            {
+                id: 'lizard1',
+                name: 'Water Dragon',
+                description: 'Semi-aquatic lizard with crest, often found near water bodies',
+                imageUrl: 'https://i.imgur.com/IIAhO4W.jpeg'
+            },
+            {
+                id: 'frog2',
+                name: 'Frog',
+                description: 'stony frog',
+                imageUrl: 'https://i.imgur.com/xEW5LJh.jpeg'
+            },
+            {
+                id: 'frog3',
+                name: 'Froggo',
+                description: 'stoney frog',
+                imageUrl: 'https://i.imgur.com/EELh1zu.jpeg'
+            },
+            {
+                id: 'frog4',
+                name: 'Golden Bell Frog',
+                description: 'Green and golden frog, often basks, distinct blue thighs',
+                imageUrl: 'https://i.imgur.com/Bynr1Ie.jpeg'
+            },
+            {
+                id: 'frog5',
+                name: 'Golden Bell Frog',
+                description: 'Green and golden frog, often basks, distinct blue thighs',
+                imageUrl: 'https://i.imgur.com/khXKCc6.jpeg'
+            },
+            {
+                id: 'lizard2',
+                name: 'Boyds Forest Dragon',
+                description: 'arboreal lizard',
+                imageUrl: 'https://i.imgur.com/NTdjX90.jpeg'
+            },
+            {
+                id: 'frog6',
+                name: 'Dainty Tree Frog',
+                description: 'Small, slender green frog with yellow sides and orange eyes',
+                imageUrl: 'https://i.imgur.com/yuN6cke.jpeg'
+            },
+            {
+                id: 'frog7',
+                name: 'Dainty Tree Frog',
+                description: 'Small, slender green frog with yellow sides and orange eyes',
+                imageUrl: 'https://i.imgur.com/h48a8gF.jpeg'
+            },
+            {
+                id: 'snake2',
+                name: 'Jungle Python',
+                description: 'Vividly coloured non-venomous snake, often yellow and black',
+                imageUrl: 'https://i.imgur.com/CC5IYZ5.jpeg'
+            },
+            {
+                id: 'lizard3',
+                name: 'Leaf tailed Gecko',
+                description: 'Masters of camouflage, flat body and broad, leaf-like tail',
+                imageUrl: 'https://i.imgur.com/WLLdMNu.jpeg'
+            },
+            {
+                id: 'snake3',
+                name: 'Green Viper',
+                description: 'Venomous pit viper, typically green, arboreal, heat-sensing pits',
+                imageUrl: 'https://i.imgur.com/lIiOrwD.jpeg'
+            },
+            {
+                id: 'snake4',
+                name: 'Wolf Snake(?)',
+                description: 'Slender, non-venomous, nocturnal, often mimics venomous kraits',
+                imageUrl: 'https://i.imgur.com/T1sGFBr.jpeg'
+            },
+            {
+                id: 'turtle1',
+                name: 'Broadshelled Turtle',
+                description: 'Large freshwater turtle with an exceptionally long, broad neck',
+                imageUrl: 'https://i.imgur.com/zSbB4Zq.jpeg'
+            },
+            {
+                id: 'turtle2',
+                name: 'Broadshelled Turtle',
+                description: 'Large freshwater turtle with an exceptionally long, broad neck',
+                imageUrl: 'https://i.imgur.com/zKGIS2h.jpeg'
+            }
         ];
 
-        let currentFood1 = null;
-        let currentFood2 = null;
+        let currentFood1 = null; 
+        let currentFood2 = null; 
         let canSelect = true;
 
         const foodCard1El = document.getElementById('food1');
@@ -271,22 +266,22 @@
         const messageBox = document.getElementById('message-box');
         const nextRoundButton = document.getElementById('next-round-button');
 
-        function updateFoodCard(cardElement, foodData) {
-            cardElement.querySelector('img').src = foodData.imageUrl;
-            cardElement.querySelector('img').alt = foodData.name;
+        function updateFoodCard(cardElement, animalData) { 
+            cardElement.querySelector('img').src = animalData.imageUrl;
+            cardElement.querySelector('img').alt = animalData.name;
             cardElement.querySelector('img').onerror = function() {
                 this.onerror=null;
-                this.src='https://placehold.co/600x400/ef4444/ffffff?text=' + encodeURIComponent(foodData.name.replace(/\s+/g, '+')) + '+Error';
+                this.src='https://placehold.co/600x400/ef4444/ffffff?text=' + encodeURIComponent(animalData.name.replace(/\s+/g, '+')) + '+Error';
             };
-            cardElement.querySelector('.food-name').textContent = foodData.name;
-            cardElement.querySelector('.food-description').textContent = foodData.description;
-            cardElement.onclick = () => selectFood(foodData.name, cardElement.id);
+            cardElement.querySelector('.food-name').textContent = animalData.name;
+            cardElement.querySelector('.food-description').textContent = animalData.description;
+            cardElement.onclick = () => selectFood(animalData.name, cardElement.id); 
         }
 
         function loadNewRound() {
             if (foodDatabase.length < 2) {
-                messageBox.textContent = "Not enough food items for a new round!";
-                messageBox.className = 'mt-6 p-4 rounded-lg bg-red-200 text-red-700'; // Adjusted class for consistency
+                messageBox.textContent = "Not enough animals for a new round!"; 
+                messageBox.className = 'mt-6 p-4 rounded-lg bg-red-200 text-red-700'; 
                 nextRoundButton.classList.add('hidden');
                 canSelect = false;
                 return;
@@ -304,12 +299,9 @@
             updateFoodCard(foodCard1El, currentFood1);
             updateFoodCard(foodCard2El, currentFood2);
 
-            // Use consistent class naming for message box updates
-            messageBox.textContent = 'Select your preferred food item!';
-            messageBox.className = 'p-4 rounded-lg bg-blue-100 text-blue-700'; // Base classes for message box
-            // Add margin separately if needed, or include in base if always present
-            messageBox.classList.add('mt-6'); // Or adjust as needed, was 'mt-6 p-4 rounded-lg'
-
+            messageBox.textContent = 'Select your preferred animal!'; 
+            messageBox.className = 'p-4 rounded-lg bg-blue-100 text-blue-700'; 
+            messageBox.classList.add('mt-6'); 
             
             foodCard1El.classList.remove('border-4', 'border-green-500', 'opacity-50');
             foodCard2El.classList.remove('border-4', 'border-green-500', 'opacity-50');
@@ -320,11 +312,11 @@
             canSelect = true;
         }
 
-        function selectFood(foodName, selectedCardId) {
+        function selectFood(animalName, selectedCardId) { 
             if (!canSelect) return; 
 
-            messageBox.textContent = `You selected: ${foodName}!`;
-            messageBox.className = 'p-4 rounded-lg bg-green-100 text-green-700'; // Base classes
+            messageBox.textContent = `You selected: ${animalName}!`; 
+            messageBox.className = 'p-4 rounded-lg bg-green-100 text-green-700'; 
             messageBox.classList.add('mt-6');
 
 
