@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digit Memory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 24px 16px 48px;
+            box-sizing: border-box;
+        }
+        .digit {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 64px;
+            height: 84px;
+            margin: 4px;
+            border-radius: 12px;
+            background-color: #111827;
+            color: #f9fafb;
+            font-size: 2.75rem;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            box-shadow: 0 6px 12px -4px rgba(0, 0, 0, 0.35);
+        }
+        .digit.correct { background-color: #059669; }
+        .digit.wrong   { background-color: #dc2626; }
+        /* Hide number spinners */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+    </style>
+</head>
+<body>
+    <div class="w-full max-w-2xl">
+        <a href="games.html" class="text-sm text-blue-600 hover:text-blue-800 font-semibold">&larr; All games</a>
+
+        <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 mt-3 text-center">Digit Memory</h1>
+        <p class="text-gray-500 text-center mt-2">Read the digits, hold them in mind, then type them from memory.</p>
+
+        <!-- Scoreboard -->
+        <div class="grid grid-cols-3 gap-3 mt-6">
+            <div class="bg-white rounded-xl shadow p-3 text-center">
+                <div class="text-xs uppercase tracking-wide text-gray-400 font-semibold">Score</div>
+                <div id="score" class="text-2xl font-extrabold text-gray-900">0</div>
+            </div>
+            <div class="bg-white rounded-xl shadow p-3 text-center">
+                <div class="text-xs uppercase tracking-wide text-gray-400 font-semibold">Streak</div>
+                <div id="streak" class="text-2xl font-extrabold text-gray-900">0</div>
+            </div>
+            <div class="bg-white rounded-xl shadow p-3 text-center">
+                <div class="text-xs uppercase tracking-wide text-gray-400 font-semibold">Best streak</div>
+                <div id="best" class="text-2xl font-extrabold text-gray-900">0</div>
+            </div>
+        </div>
+
+        <!-- Main card -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 mt-6 min-h-[280px] flex flex-col items-center justify-center">
+
+            <!-- Start / settings screen -->
+            <div id="setup" class="w-full text-center">
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
+                    <label class="text-sm font-semibold text-gray-600">
+                        Digits
+                        <select id="digit-count" class="ml-2 border border-gray-300 rounded-lg px-3 py-1.5 font-normal text-gray-800">
+                            <option>4</option><option>5</option><option>6</option>
+                            <option>7</option><option selected>8</option><option>9</option><option>10</option>
+                        </select>
+                    </label>
+                    <label class="text-sm font-semibold text-gray-600">
+                        Look time
+                        <select id="view-time" class="ml-2 border border-gray-300 rounded-lg px-3 py-1.5 font-normal text-gray-800">
+                            <option value="3">3s</option>
+                            <option value="5" selected>5s</option>
+                            <option value="8">8s</option>
+                            <option value="0">Until I'm ready</option>
+                        </select>
+                    </label>
+                </div>
+                <button id="start-btn" class="px-8 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-md hover:bg-blue-700 transition">
+                    Start
+                </button>
+            </div>
+
+            <!-- Memorize screen -->
+            <div id="memorize" class="w-full text-center hidden">
+                <p class="text-sm font-semibold text-gray-500 mb-4">Memorize these digits…</p>
+                <div id="digit-display" class="flex flex-wrap justify-center"></div>
+                <div class="w-full bg-gray-200 rounded-full h-2 mt-6 overflow-hidden">
+                    <div id="timer-bar" class="bg-blue-500 h-2 rounded-full" style="width:100%"></div>
+                </div>
+                <button id="ready-btn" class="mt-5 px-6 py-2 bg-gray-800 text-white font-semibold rounded-lg hover:bg-gray-900 transition hidden">
+                    I'm ready
+                </button>
+            </div>
+
+            <!-- Recall screen -->
+            <div id="recall" class="w-full text-center hidden">
+                <p class="text-sm font-semibold text-gray-500 mb-4">Now type them in order.</p>
+                <input id="answer" type="number" inputmode="numeric" autocomplete="off"
+                       class="w-full text-center text-3xl font-extrabold tracking-widest text-gray-900 border-b-4 border-blue-400 focus:border-blue-600 outline-none py-3 bg-transparent"
+                       placeholder="········">
+                <button id="submit-btn" class="mt-6 px-8 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-md hover:bg-blue-700 transition">
+                    Check
+                </button>
+            </div>
+
+            <!-- Result screen -->
+            <div id="result" class="w-full text-center hidden">
+                <p id="result-headline" class="text-xl font-extrabold mb-4"></p>
+                <div class="text-left inline-block">
+                    <div class="text-xs uppercase tracking-wide text-gray-400 font-semibold mb-1">Correct answer</div>
+                    <div id="result-digits" class="flex flex-wrap justify-center mb-4"></div>
+                </div>
+                <div id="result-detail" class="text-sm text-gray-500 mb-5"></div>
+                <button id="next-btn" class="px-8 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-md hover:bg-blue-700 transition">
+                    Next round
+                </button>
+            </div>
+        </div>
+
+        <p class="text-xs text-gray-400 text-center mt-4">Tip: press <kbd class="px-1.5 py-0.5 bg-gray-200 rounded">Enter</kbd> to check your answer and again for the next round.</p>
+    </div>
+
+    <script>
+        const el = (id) => document.getElementById(id);
+        const screens = {
+            setup: el('setup'),
+            memorize: el('memorize'),
+            recall: el('recall'),
+            result: el('result'),
+        };
+
+        let currentDigits = [];   // array of number chars
+        let score = 0;
+        let streak = 0;
+        let best = 0;
+        let timerHandle = null;
+
+        function show(name) {
+            Object.values(screens).forEach(s => s.classList.add('hidden'));
+            screens[name].classList.remove('hidden');
+        }
+
+        function randomDigits(n) {
+            const arr = [];
+            for (let i = 0; i < n; i++) arr.push(String(Math.floor(Math.random() * 10)));
+            return arr;
+        }
+
+        function startRound() {
+            const count = parseInt(el('digit-count').value, 10);
+            const viewTime = parseInt(el('view-time').value, 10); // seconds, 0 = manual
+            currentDigits = randomDigits(count);
+
+            // Render the digits.
+            const display = el('digit-display');
+            display.innerHTML = '';
+            currentDigits.forEach(d => {
+                const box = document.createElement('div');
+                box.className = 'digit';
+                box.textContent = d;
+                display.appendChild(box);
+            });
+
+            show('memorize');
+            const readyBtn = el('ready-btn');
+            const bar = el('timer-bar');
+
+            if (timerHandle) { clearInterval(timerHandle); timerHandle = null; }
+
+            if (viewTime === 0) {
+                // Manual: user reveals recall when ready.
+                bar.style.width = '100%';
+                readyBtn.classList.remove('hidden');
+            } else {
+                readyBtn.classList.add('hidden');
+                const total = viewTime * 1000;
+                const startTime = Date.now();
+                bar.style.width = '100%';
+                timerHandle = setInterval(() => {
+                    const elapsed = Date.now() - startTime;
+                    const remaining = Math.max(0, 1 - elapsed / total);
+                    bar.style.width = (remaining * 100) + '%';
+                    if (elapsed >= total) {
+                        clearInterval(timerHandle);
+                        timerHandle = null;
+                        goToRecall();
+                    }
+                }, 50);
+            }
+        }
+
+        function goToRecall() {
+            show('recall');
+            const input = el('answer');
+            input.value = '';
+            input.maxLength = currentDigits.length; // hint; number inputs ignore but harmless
+            input.focus();
+        }
+
+        function checkAnswer() {
+            const raw = el('answer').value.replace(/\D/g, '');
+            const answer = raw.split('');
+            const correct = currentDigits;
+
+            let correctCount = 0;
+            for (let i = 0; i < correct.length; i++) {
+                if (answer[i] === correct[i]) correctCount++;
+            }
+            const perfect = correctCount === correct.length && answer.length === correct.length;
+
+            // Update scores.
+            if (perfect) {
+                score++;
+                streak++;
+                if (streak > best) best = streak;
+            } else {
+                streak = 0;
+            }
+            el('score').textContent = score;
+            el('streak').textContent = streak;
+            el('best').textContent = best;
+
+            // Build the coloured result row.
+            const row = el('result-digits');
+            row.innerHTML = '';
+            correct.forEach((d, i) => {
+                const box = document.createElement('div');
+                box.className = 'digit ' + (answer[i] === d ? 'correct' : 'wrong');
+                box.textContent = d;
+                row.appendChild(box);
+            });
+
+            el('result-headline').textContent = perfect ? '🎉 Perfect!' : 'Not quite';
+            el('result-headline').className = 'text-xl font-extrabold mb-4 ' + (perfect ? 'text-green-600' : 'text-red-500');
+            el('result-detail').textContent =
+                `You matched ${correctCount} of ${correct.length} digits in position.` +
+                (perfect ? '' : `  You typed: ${raw || '(nothing)'}`);
+
+            show('result');
+            el('next-btn').focus();
+        }
+
+        // Wiring.
+        el('start-btn').addEventListener('click', startRound);
+        el('ready-btn').addEventListener('click', goToRecall);
+        el('submit-btn').addEventListener('click', checkAnswer);
+        el('next-btn').addEventListener('click', startRound);
+
+        el('answer').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); checkAnswer(); }
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !screens.result.classList.contains('hidden')) {
+                e.preventDefault();
+                startRound();
+            }
+        });
+    </script>
+</body>
+</html>
