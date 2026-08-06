@@ -75,8 +75,13 @@
                     <label class="text-sm font-semibold text-gray-600">
                         Digits
                         <select id="digit-count" class="ml-2 border border-gray-300 rounded-lg px-3 py-1.5 font-normal text-gray-800">
-                            <option>4</option><option>5</option><option>6</option>
-                            <option>7</option><option selected>8</option><option>9</option><option>10</option>
+                            <option value="variable">🎲 Variable (4–20)</option>
+                            <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+                            <option value="7">7</option><option value="8" selected>8</option><option value="9">9</option>
+                            <option value="10">10</option><option value="11">11</option><option value="12">12</option>
+                            <option value="13">13</option><option value="14">14</option><option value="15">15</option>
+                            <option value="16">16</option><option value="17">17</option><option value="18">18</option>
+                            <option value="19">19</option><option value="20">20</option>
                         </select>
                     </label>
                     <label class="text-sm font-semibold text-gray-600">
@@ -96,7 +101,7 @@
 
             <!-- Memorize screen -->
             <div id="memorize" class="w-full text-center hidden">
-                <p class="text-sm font-semibold text-gray-500 mb-4">Memorize these digits…</p>
+                <p id="memorize-label" class="text-sm font-semibold text-gray-500 mb-4">Memorize these digits…</p>
                 <div id="digit-display" class="flex flex-wrap justify-center"></div>
                 <div class="w-full bg-gray-200 rounded-full h-2 mt-6 overflow-hidden">
                     <div id="timer-bar" class="bg-blue-500 h-2 rounded-full" style="width:100%"></div>
@@ -196,10 +201,16 @@
         }
 
         function startRound() {
-            const count = parseInt(el('digit-count').value, 10);
+            const sel = el('digit-count').value;
+            // In "variable" mode each round picks a fresh random length in [4, 20].
+            const count = (sel === 'variable')
+                ? 4 + Math.floor(Math.random() * 17)
+                : parseInt(sel, 10);
             const viewTime = parseInt(el('view-time').value, 10); // seconds, 0 = manual
             currentDigits = randomDigits(count);
             currentGroups = randomGroups(count);
+
+            el('memorize-label').textContent = `Memorize these ${count} digits…`;
 
             // Render the digits, chunked into this round's random groups.
             renderGrouped(el('digit-display'), currentDigits, currentGroups);
