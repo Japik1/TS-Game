@@ -50,19 +50,19 @@
         <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 mt-3 text-center">Digit Memory</h1>
         <p class="text-gray-500 text-center mt-2">Read the digits, hold them in mind, then type them from memory.</p>
 
-        <!-- Scoreboard -->
+        <!-- Live scoreboard -->
         <div class="grid grid-cols-3 gap-3 mt-6">
             <div class="bg-white rounded-xl shadow p-3 text-center">
-                <div class="text-xs uppercase tracking-wide text-gray-400 font-semibold">Score</div>
-                <div id="score" class="text-2xl font-extrabold text-gray-900">0</div>
-            </div>
-            <div class="bg-white rounded-xl shadow p-3 text-center">
-                <div class="text-xs uppercase tracking-wide text-gray-400 font-semibold">Streak</div>
-                <div id="streak" class="text-2xl font-extrabold text-gray-900">0</div>
+                <div class="text-xs uppercase tracking-wide text-gray-400 font-semibold">Current streak</div>
+                <div id="stat-streak" class="text-2xl font-extrabold text-gray-900">0</div>
             </div>
             <div class="bg-white rounded-xl shadow p-3 text-center">
                 <div class="text-xs uppercase tracking-wide text-gray-400 font-semibold">Best streak</div>
-                <div id="best" class="text-2xl font-extrabold text-gray-900">0</div>
+                <div id="stat-best" class="text-2xl font-extrabold text-gray-900">0</div>
+            </div>
+            <div class="bg-white rounded-xl shadow p-3 text-center">
+                <div class="text-xs uppercase tracking-wide text-gray-400 font-semibold">Furthest</div>
+                <div><span id="stat-furthest" class="text-2xl font-extrabold text-gray-900">0</span><span class="text-xs text-gray-400 font-semibold"> digits</span></div>
             </div>
         </div>
 
@@ -137,6 +137,60 @@
         </div>
 
         <p class="text-xs text-gray-400 text-center mt-4">Tip: press <kbd class="px-1.5 py-0.5 bg-gray-200 rounded">Enter</kbd> to check your answer and again for the next round.</p>
+
+        <!-- Lifetime stats -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 mt-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-extrabold text-gray-900">Your stats</h2>
+                <button id="reset-stats" class="text-xs text-gray-400 hover:text-red-500 font-semibold">Reset</button>
+            </div>
+
+            <div id="stats-empty" class="text-sm text-gray-400 text-center py-6">Play a round to start tracking your stats.</div>
+
+            <div id="stats-body" class="hidden">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div class="bg-gray-50 rounded-xl p-3 text-center">
+                        <div class="text-[11px] uppercase tracking-wide text-gray-400 font-semibold">Rounds played</div>
+                        <div id="ls-rounds" class="text-xl font-extrabold text-gray-900">0</div>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl p-3 text-center">
+                        <div class="text-[11px] uppercase tracking-wide text-gray-400 font-semibold">Perfect rate</div>
+                        <div id="ls-perfectrate" class="text-xl font-extrabold text-gray-900">—</div>
+                        <div id="ls-perfectcount" class="text-[11px] text-gray-400"></div>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl p-3 text-center">
+                        <div class="text-[11px] uppercase tracking-wide text-gray-400 font-semibold">Avg accuracy · lifetime</div>
+                        <div id="ls-acc-life" class="text-xl font-extrabold text-gray-900">—</div>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl p-3 text-center">
+                        <div class="text-[11px] uppercase tracking-wide text-gray-400 font-semibold">Avg accuracy · 7 days</div>
+                        <div id="ls-acc-week" class="text-xl font-extrabold text-gray-900">—</div>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl p-3 text-center">
+                        <div class="text-[11px] uppercase tracking-wide text-gray-400 font-semibold">Reliable span</div>
+                        <div><span id="ls-span" class="text-xl font-extrabold text-gray-900">—</span><span class="text-[11px] text-gray-400 font-semibold"> digits</span></div>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl p-3 text-center">
+                        <div class="text-[11px] uppercase tracking-wide text-gray-400 font-semibold">Avg length</div>
+                        <div id="ls-avglen" class="text-xl font-extrabold text-gray-900">—</div>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl p-3 text-center">
+                        <div class="text-[11px] uppercase tracking-wide text-gray-400 font-semibold">Played today</div>
+                        <div id="ls-today" class="text-xl font-extrabold text-gray-900">0</div>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl p-3 text-center">
+                        <div class="text-[11px] uppercase tracking-wide text-gray-400 font-semibold">Played · 7 days</div>
+                        <div id="ls-week" class="text-xl font-extrabold text-gray-900">0</div>
+                    </div>
+                </div>
+
+                <!-- Accuracy by length -->
+                <div class="mt-6">
+                    <div class="text-[11px] uppercase tracking-wide text-gray-400 font-semibold mb-2">Perfect rate by length</div>
+                    <div id="ls-bylength" class="space-y-1.5"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -150,14 +204,125 @@
 
         let currentDigits = [];   // array of number chars
         let currentGroups = [];   // random chunk sizes, e.g. [3,2,3], summing to the digit count
-        let score = 0;
-        let streak = 0;
-        let best = 0;
         let timerHandle = null;
 
         function show(name) {
             Object.values(screens).forEach(s => s.classList.add('hidden'));
             screens[name].classList.remove('hidden');
+        }
+
+        /* ---------- Persistent stats (localStorage) ---------- */
+        const STORAGE_KEY = 'digitMemoryStats.v1';
+
+        function loadStats() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    const s = JSON.parse(raw);
+                    s.rounds = Array.isArray(s.rounds) ? s.rounds : [];
+                    s.streak = s.streak || 0;
+                    s.bestStreak = s.bestStreak || 0;
+                    return s;
+                }
+            } catch (e) { /* corrupt or unavailable storage — fall through */ }
+            return { rounds: [], streak: 0, bestStreak: 0 };
+        }
+
+        function saveStats(s) {
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); } catch (e) { /* ignore */ }
+        }
+
+        // Record one round: n digits shown, c matched in position, ok = perfect round.
+        function recordRound(n, c, ok) {
+            const s = loadStats();
+            s.rounds.push({ t: Date.now(), n, c, ok });
+            if (s.rounds.length > 3000) s.rounds = s.rounds.slice(-3000); // keep storage bounded
+            if (ok) {
+                s.streak += 1;
+                if (s.streak > s.bestStreak) s.bestStreak = s.streak;
+            } else {
+                s.streak = 0;
+            }
+            saveStats(s);
+            return s;
+        }
+
+        const mean = (arr) => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
+        const pct = (x) => Math.round(x) + '%';
+
+        function renderStats(s) {
+            s = s || loadStats();
+            const rounds = s.rounds;
+
+            // Top live scoreboard.
+            el('stat-streak').textContent = s.streak;
+            el('stat-best').textContent = s.bestStreak;
+            const perfectLengths = rounds.filter(r => r.ok).map(r => r.n);
+            el('stat-furthest').textContent = perfectLengths.length ? Math.max(...perfectLengths) : 0;
+
+            if (rounds.length === 0) {
+                el('stats-empty').classList.remove('hidden');
+                el('stats-body').classList.add('hidden');
+                return;
+            }
+            el('stats-empty').classList.add('hidden');
+            el('stats-body').classList.remove('hidden');
+
+            const now = Date.now();
+            const weekAgo = now - 7 * 24 * 60 * 60 * 1000;
+            const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
+
+            const weekRounds = rounds.filter(r => r.t >= weekAgo);
+            const perfectCount = rounds.filter(r => r.ok).length;
+
+            el('ls-rounds').textContent = rounds.length;
+            el('ls-perfectrate').textContent = pct(perfectCount / rounds.length * 100);
+            el('ls-perfectcount').textContent = `${perfectCount} perfect`;
+            el('ls-acc-life').textContent = pct(mean(rounds.map(r => r.c / r.n)) * 100);
+            el('ls-acc-week').textContent = weekRounds.length ? pct(mean(weekRounds.map(r => r.c / r.n)) * 100) : '—';
+            el('ls-avglen').textContent = mean(rounds.map(r => r.n)).toFixed(1);
+            el('ls-today').textContent = rounds.filter(r => r.t >= todayStart.getTime()).length;
+            el('ls-week').textContent = weekRounds.length;
+
+            // Per-length breakdown: attempts and perfect-rate at each digit length.
+            const byLen = {};
+            rounds.forEach(r => {
+                if (!byLen[r.n]) byLen[r.n] = { att: 0, ok: 0 };
+                byLen[r.n].att++;
+                if (r.ok) byLen[r.n].ok++;
+            });
+            const lengths = Object.keys(byLen).map(Number).sort((a, b) => a - b);
+
+            // Reliable span: longest length you clear perfectly at least half the time (min 3 tries).
+            let span = null;
+            lengths.forEach(n => {
+                const b = byLen[n];
+                if (b.att >= 3 && b.ok / b.att >= 0.5) span = n;
+            });
+            el('ls-span').textContent = span !== null ? span : '—';
+
+            const container = el('ls-bylength');
+            container.innerHTML = '';
+            lengths.forEach(n => {
+                const b = byLen[n];
+                const rate = b.ok / b.att * 100;
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-3 text-xs';
+                row.innerHTML = `
+                    <span class="w-14 text-gray-500 font-semibold flex-shrink-0">${n} digits</span>
+                    <div class="flex-grow bg-gray-100 rounded-full h-2.5 overflow-hidden">
+                        <div class="h-2.5 rounded-full ${rate >= 50 ? 'bg-green-500' : 'bg-amber-400'}" style="width:${rate}%"></div>
+                    </div>
+                    <span class="w-24 text-right text-gray-400 flex-shrink-0">${Math.round(rate)}% · ${b.att} ${b.att === 1 ? 'try' : 'tries'}</span>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function resetStats() {
+            if (!confirm('Reset all saved stats? This cannot be undone.')) return;
+            try { localStorage.removeItem(STORAGE_KEY); } catch (e) { /* ignore */ }
+            renderStats({ rounds: [], streak: 0, bestStreak: 0 });
         }
 
         function randomDigits(n) {
@@ -262,17 +427,9 @@
             }
             const perfect = correctCount === correct.length && answer.length === correct.length;
 
-            // Update scores.
-            if (perfect) {
-                score++;
-                streak++;
-                if (streak > best) best = streak;
-            } else {
-                streak = 0;
-            }
-            el('score').textContent = score;
-            el('streak').textContent = streak;
-            el('best').textContent = best;
+            // Persist the round and refresh all stats.
+            const stats = recordRound(correct.length, correctCount, perfect);
+            renderStats(stats);
 
             // Build the coloured result row, using the same grouping the player saw.
             renderGrouped(el('result-digits'), correct, currentGroups,
@@ -293,6 +450,10 @@
         el('ready-btn').addEventListener('click', goToRecall);
         el('submit-btn').addEventListener('click', checkAnswer);
         el('next-btn').addEventListener('click', startRound);
+        el('reset-stats').addEventListener('click', resetStats);
+
+        // Show any saved stats on load.
+        renderStats();
 
         el('answer').addEventListener('keydown', (e) => {
             if (e.key === 'Enter') { e.preventDefault(); checkAnswer(); }
