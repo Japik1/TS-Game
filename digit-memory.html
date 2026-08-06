@@ -35,6 +35,8 @@
         }
         .digit.correct { background-color: #059669; }
         .digit.wrong   { background-color: #dc2626; }
+        /* Groups sit close together internally, with a clear gap between groups. */
+        .digit-group { display: inline-flex; margin: 4px 14px; }
         /* Hide number spinners */
         input[type=number]::-webkit-inner-spin-button,
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
@@ -142,6 +144,7 @@
         };
 
         let currentDigits = [];   // array of number chars
+        let currentGroups = [];   // random chunk sizes, e.g. [3,2,3], summing to the digit count
         let score = 0;
         let streak = 0;
         let best = 0;
@@ -158,20 +161,48 @@
             return arr;
         }
 
+        // Split n digits into random groups of 2-4 (e.g. 8 -> [3,2,3] or [2,4,2]),
+        // so the visual chunking changes every round. Avoids leaving an orphan single digit.
+        function randomGroups(n) {
+            const groups = [];
+            let remaining = n;
+            while (remaining > 0) {
+                let size = 2 + Math.floor(Math.random() * 3); // 2, 3, or 4
+                if (size >= remaining || remaining - size === 1) size = remaining;
+                groups.push(size);
+                remaining -= size;
+            }
+            return groups;
+        }
+
+        // Render a digit array into a container, chunked by `groups`.
+        // classFor(i) optionally returns an extra class for the digit at index i.
+        function renderGrouped(container, digits, groups, classFor) {
+            container.innerHTML = '';
+            let idx = 0;
+            groups.forEach(size => {
+                const group = document.createElement('div');
+                group.className = 'digit-group';
+                for (let k = 0; k < size; k++) {
+                    const i = idx;
+                    const box = document.createElement('div');
+                    box.className = 'digit' + (classFor ? ' ' + classFor(i) : '');
+                    box.textContent = digits[i];
+                    group.appendChild(box);
+                    idx++;
+                }
+                container.appendChild(group);
+            });
+        }
+
         function startRound() {
             const count = parseInt(el('digit-count').value, 10);
             const viewTime = parseInt(el('view-time').value, 10); // seconds, 0 = manual
             currentDigits = randomDigits(count);
+            currentGroups = randomGroups(count);
 
-            // Render the digits.
-            const display = el('digit-display');
-            display.innerHTML = '';
-            currentDigits.forEach(d => {
-                const box = document.createElement('div');
-                box.className = 'digit';
-                box.textContent = d;
-                display.appendChild(box);
-            });
+            // Render the digits, chunked into this round's random groups.
+            renderGrouped(el('digit-display'), currentDigits, currentGroups);
 
             show('memorize');
             const readyBtn = el('ready-btn');
@@ -232,15 +263,9 @@
             el('streak').textContent = streak;
             el('best').textContent = best;
 
-            // Build the coloured result row.
-            const row = el('result-digits');
-            row.innerHTML = '';
-            correct.forEach((d, i) => {
-                const box = document.createElement('div');
-                box.className = 'digit ' + (answer[i] === d ? 'correct' : 'wrong');
-                box.textContent = d;
-                row.appendChild(box);
-            });
+            // Build the coloured result row, using the same grouping the player saw.
+            renderGrouped(el('result-digits'), correct, currentGroups,
+                (i) => answer[i] === correct[i] ? 'correct' : 'wrong');
 
             el('result-headline').textContent = perfect ? '🎉 Perfect!' : 'Not quite';
             el('result-headline').className = 'text-xl font-extrabold mb-4 ' + (perfect ? 'text-green-600' : 'text-red-500');
